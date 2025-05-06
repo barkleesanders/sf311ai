@@ -1,0 +1,45 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sf311ai"
+version = "0.1.0"
+description = "Open-vocabulary 311 issue detection from drone video using YOLO-World and automated reporting to SF311."
+authors = [
+    { name="Barklee Sanders", email="barkleesanders@example.com" }
+]
+license = { file = "LICENSE" }
+readme = "README.md"
+requires-python = ">=3.8"
+dependencies = [
+    "opencv-python",
+    "requests",
+    "python-dotenv",
+    "pandas",
+    "pyyaml",
+    "torch",
+    "torchvision",
+    "yolo-world @ git+https://github.com/ultralytics/yolo-world.git"
+]
+
+[project.optional-dependencies]
+dev = [
+    "black",
+    "isort",
+    "flake8",
+    "mypy",
+    "pytest",
+    "pytest-cov",
+    "requests-mock"
+]
+
+[tool.black]
+line-length = 88
+
+[tool.isort]
+profile = "black"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "--cov=sf311ai"
