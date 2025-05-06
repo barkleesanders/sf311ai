@@ -1,0 +1,27 @@
+# config.yaml
+paths:
+  output_dir: output/
+  log_file: sf311ai.log
+ai_params:
+  confidence_threshold: 0.4
+  yolo_world_model_variant: 'yolo_world/l' # Example variant
+  # --- KEY CHANGE: Define text prompts for detection ---
+  yolo_world_detection_classes:
+    - 'trash pile'
+    - 'garbage bag'
+    - 'overflowing bin'
+    - 'graffiti'
+    - 'street art'
+    - 'dog waste'
+    - 'broken sidewalk'
+    - 'pothole'
+    - 'damaged street sign'
+api_client:
+  base_url: PLACEHOLDER_SF311_API_BASE_URL
+  # Mapping from YOLO-World prompts to SF311 service codes must be defined
+  # This needs careful consideration based on API discovery
+  prompt_to_service_code:
+    'trash pile': 'S0331' # EXAMPLE
+    'graffiti': 'S0191' # EXAMPLE
+    'dog waste': 'S0XXX' # EXAMPLE
+    'pothole': 'S0YYY' # EXAMPLE
