@@ -37,5 +37,18 @@ Open-vocabulary 311 issue detection from drone video using YOLO-World and automa
 - Type check: `mypy .`
 - Test: `pytest --cov=sf311ai`
 
+## SF311 Form Automation
+The repository also includes `submit_sf311.py` which automates submitting online
+forms on the official SF311 website using Playwright. Create a `config.json`
+mapping each form slug to its required field values and run:
+
+```sh
+python submit_sf311.py --config config.json
+```
+
+Use the `--show` flag to launch the browser in headed mode for debugging. Each
+submission confirmation is appended to `submissions.csv` and any errors are
+logged to `errors.log`.
+
 ## License
 MIT © 2025 Barklee Sanders
