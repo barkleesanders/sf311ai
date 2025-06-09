@@ -30,7 +30,7 @@ def load_config(path: str) -> Dict[str, Dict[str, Any]]:
         return json.load(f)
 
 
-async def navigate_with_retries(page, url: str, max_retries: int = 3) -> None:
+async def navigate_with_retries(page: Page, url: str, max_retries: int = 3) -> None:
     """Navigate to a URL with retry logic for timeouts."""
     for attempt in range(max_retries):
         try:
