@@ -25,3 +25,6 @@ api_client:
     'graffiti': 'S0191' # EXAMPLE
     'dog waste': 'S0XXX' # EXAMPLE
     'pothole': 'S0YYY' # EXAMPLE
+
+# Supply each image filename and its verified lat/long before using --submit.
+image_locations: {}

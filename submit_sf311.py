@@ -15,11 +15,14 @@ from typing import Any, Dict
 
 from dotenv import load_dotenv
 from playwright.async_api import (
-    async_playwright,
-    TimeoutError as PlaywrightTimeoutError,
+    Page,
 )
+from playwright.async_api import TimeoutError as PlaywrightTimeoutError
+from playwright.async_api import async_playwright
 
-BASE_URL = "https://sanfrancisco.form.us.empro.verintcloudservices.com/form/auto"
+BASE_URL = (
+    "https://sanfrancisco.form.us.empro.verintcloudservices.com/form/auto"
+)
 CSV_FILE = "submissions.csv"
 ERROR_LOG = "errors.log"
 
@@ -30,7 +33,9 @@ def load_config(path: str) -> Dict[str, Dict[str, Any]]:
         return json.load(f)
 
 
-async def navigate_with_retries(page: Page, url: str, max_retries: int = 3) -> None:
+async def navigate_with_retries(
+    page: Page, url: str, max_retries: int = 3
+) -> None:
     """Navigate to a URL with retry logic for timeouts."""
     for attempt in range(max_retries):
         try:
@@ -43,7 +48,9 @@ async def navigate_with_retries(page: Page, url: str, max_retries: int = 3) -> N
 
 async def fill_required_fields(page, data: Dict[str, Any], slug: str) -> None:
     """Fill all required form fields with provided data."""
-    required = page.locator("input[required], select[required], textarea[required]")
+    required = page.locator(
+        "input[required], select[required], textarea[required]"
+    )
     count = await required.count()
     for i in range(count):
         el = required.nth(i)
@@ -51,7 +58,9 @@ async def fill_required_fields(page, data: Dict[str, Any], slug: str) -> None:
         if not name:
             continue
         if name not in data:
-            raise ValueError(f"Missing value for required field '{name}' on {slug}")
+            raise ValueError(
+                f"Missing value for required field '{name}' on {slug}"
+            )
         value = data[name]
         input_type = (await el.get_attribute("type")) or "text"
         tag = await el.evaluate("e => e.tagName")
@@ -93,7 +102,9 @@ async def process_forms(config: Dict[str, Dict[str, Any]], show: bool) -> None:
         for slug, data in config.items():
             try:
                 confirmation = await submit_form(page, slug, data)
-                csv_writer.writerow([datetime.utcnow().isoformat(), slug, confirmation])
+                csv_writer.writerow(
+                    [datetime.utcnow().isoformat(), slug, confirmation]
+                )
                 await page.wait_for_timeout(random.randint(2000, 5000))
             except Exception:
                 logging.exception("Failed to submit %s", slug)
@@ -102,7 +113,9 @@ async def process_forms(config: Dict[str, Dict[str, Any]], show: bool) -> None:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Submit SF311 forms")
-    parser.add_argument("--config", default="config.json", help="Path to config JSON")
+    parser.add_argument(
+        "--config", default="config.json", help="Path to config JSON"
+    )
     parser.add_argument(
         "--show", action="store_true", help="Show browser for debugging"
     )

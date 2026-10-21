@@ -1,0 +1,13 @@
+.git
+.env
+.env.*
+*.pt
+weights
+runs
+build
+dist
+.venv
+venv
+__pycache__
+.pytest_cache
+.mypy_cache
