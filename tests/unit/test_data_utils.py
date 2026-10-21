@@ -1,5 +1,5 @@
-import os
 from sf311ai.data_utils import load_images_from_folder
+
 
 def test_load_images_from_folder(tmp_path):
     img_dir = tmp_path / "images"

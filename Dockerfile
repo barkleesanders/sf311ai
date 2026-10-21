@@ -1,11 +1,8 @@
-FROM python:3.10-slim
-
+FROM python:3.12-slim
 WORKDIR /app
-
-COPY pyproject.toml ./
+RUN apt-get update && apt-get install --no-install-recommends -y libgl1 libglib2.0-0 && \
+    rm -rf /var/lib/apt/lists/*
 COPY . .
-
-RUN pip install --upgrade pip && \
-    pip install .[dev]
-
-CMD ["python", "scripts/run_workflow.py", "config.yaml", "images/"]
+RUN python -m pip install --no-cache-dir torch torchvision --index-url https://download.pytorch.org/whl/cpu && \
+    python -m pip install --no-cache-dir . && python -m pip check
+CMD ["sf311ai", "--help"]

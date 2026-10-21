@@ -24,6 +24,9 @@ dist/
 htmlcov/
 .cache/
 .pytest_cache/
+*.pt
+weights/
+runs/
 *.bak
 *.swp
 *.swo

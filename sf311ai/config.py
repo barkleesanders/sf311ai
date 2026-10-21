@@ -1,8 +1,10 @@
 import os
+
 import yaml
 from dotenv import load_dotenv
 
 load_dotenv()
+
 
 class Config:
     def __init__(self, config_path="config.yaml"):
@@ -11,4 +13,5 @@ class Config:
         self.paths = data["paths"]
         self.ai_params = data["ai_params"]
         self.api_client = data["api_client"]
+        self.image_locations = data.get("image_locations", {})
         self.sf311_api_key = os.getenv("SF311_API_KEY")

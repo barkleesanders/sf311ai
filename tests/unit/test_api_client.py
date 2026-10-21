@@ -1,30 +1,83 @@
+import json
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from threading import Thread
+from types import SimpleNamespace
+
 import pytest
-from unittest.mock import patch, MagicMock
+
 from sf311ai.api_client import SF311APIClient
-from sf311ai.config import Config
+from sf311ai.locations import validate_location
 
-class DummyConfig:
-    def __init__(self):
-        self.api_client = {
-            "base_url": "http://example.com",
-            "prompt_to_service_code": {"trash pile": "S0331"}
-        }
-        self.sf311_api_key = "testkey"
 
-def test_submit_report_success():
-    config = DummyConfig()
-    client = SF311APIClient(config)
-    with patch("requests.post") as mock_post, patch("builtins.open", create=True) as mock_open:
-        mock_response = MagicMock()
-        mock_response.status_code = 201
-        mock_response.json.return_value = {"result": "ok"}
-        mock_post.return_value = mock_response
-        mock_open.return_value = MagicMock()
-        result = client.submit_report("trash pile", {"lat": 1.0, "long": 2.0}, "dummy.jpg")
-        assert result == {"result": "ok"}
+@pytest.mark.parametrize(
+    "location",
+    [
+        None,
+        {},
+        {"lat": 0, "long": 0},
+        {"lat": 91, "long": 1},
+        {"lat": 1, "long": float("nan")},
+        {"lat": True, "long": 1},
+    ],
+)
+def test_invalid_location_rejected(location):
+    with pytest.raises(ValueError):
+        validate_location(location)
 
-def test_submit_report_no_service_code():
-    config = DummyConfig()
-    client = SF311APIClient(config)
-    result = client.submit_report("unknown", {"lat": 1.0, "long": 2.0}, "dummy.jpg")
-    assert result is None
+
+def test_multipart_upload_and_rejection(tmp_path):
+    requests = []
+
+    class Handler(BaseHTTPRequestHandler):
+        def do_POST(self):
+            requests.append(
+                (
+                    self.path,
+                    self.rfile.read(int(self.headers["Content-Length"])),
+                )
+            )
+            self.send_response(201 if len(requests) == 1 else 503)
+            self.end_headers()
+            self.wfile.write(
+                json.dumps({"service_request_id": "local-fixture"}).encode()
+            )
+
+        def log_message(self, *args):
+            pass
+
+    server = ThreadingHTTPServer(("127.0.0.1", 0), Handler)
+    thread = Thread(target=server.serve_forever)
+    thread.start()
+    image = tmp_path / "image.jpg"
+    image.write_bytes(b"local-fixture-bytes")
+    client = SF311APIClient(
+        SimpleNamespace(
+            api_client={
+                "base_url": f"http://127.0.0.1:{server.server_port}",
+                "prompt_to_service_code": {"trash pile": "fixture-code"},
+            },
+            sf311_api_key="fixture-key",
+        )
+    )
+    try:
+        assert client.submit_report(
+            "trash pile", {"lat": 37.77, "long": -122.4}, str(image)
+        ) == {"service_request_id": "local-fixture"}
+        assert requests[0][0] == "/requests.json"
+        assert b"local-fixture-bytes" in requests[0][1]
+        assert b"fixture-code" in requests[0][1]
+        assert b"37.77" in requests[0][1]
+        with pytest.raises(RuntimeError, match="503"):
+            client.submit_report(
+                "trash pile", {"lat": 37.77, "long": -122.4}, str(image)
+            )
+        assert (
+            client.submit_report(
+                "unknown", {"lat": 37.77, "long": -122.4}, str(image)
+            )
+            is None
+        )
+    finally:
+        server.shutdown()
+        thread.join()
+        server.server_close()
