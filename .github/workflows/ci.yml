@@ -30,8 +30,14 @@ jobs:
       - run: black --check .
       - run: isort --check-only .
       - run: flake8 .
-      - run: mypy . --ignore-missing-imports
+      - run: mypy
       - run: pytest -q
+      - name: Real YOLO-World positive and blank-image controls
+        if: matrix.python == '3.12'
+        env:
+          YOLO_AUTOINSTALL: 'false'
+          YOLO_CONFIG_DIR: ${{ runner.temp }}/sf311ai-model-config
+        run: python scripts/model_smoke.py
       - name: Audit registry packages (CLIP commit is reviewed separately)
         run: pip-audit
       - name: Build wheel and source distribution

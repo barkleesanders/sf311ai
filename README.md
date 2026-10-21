@@ -57,7 +57,7 @@ browsers.
 ## Development
 - Format: `black .`
 - Lint: `flake8 .`
-- Type check: `mypy .`
+- Type check: `mypy`
 - Test: `pytest --cov=sf311ai`
 
 ## SF311 Form Automation

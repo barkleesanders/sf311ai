@@ -53,3 +53,7 @@ line_length = 79
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "--cov=sf311ai"
+
+[tool.mypy]
+files = ["sf311ai", "scripts", "tests", "submit_sf311.py"]
+ignore_missing_imports = true
