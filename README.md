@@ -14,7 +14,7 @@ Open-vocabulary issue detection from images using YOLO-World. Preview detections
    ```sh
    git clone https://github.com/barkleesanders/sf311ai.git
    cd sf311ai
-   # Python 3.10 or newer
+   # Python 3.11 or newer (required by patched Pillow)
    python3 -m venv venv && source venv/bin/activate
    pip install .
    ```
