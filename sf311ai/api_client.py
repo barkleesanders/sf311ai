@@ -33,8 +33,9 @@ class SF311APIClient:
         location = validate_location(location)
         service_code = self.prompt_to_service_code.get(prompt)
         if not service_code:
-            self.logger.error(f"No service code for prompt: {prompt}")
-            return None
+            raise ValueError(
+                f"No configured service code for prompt: {prompt}"
+            )
         data = {
             "service_code": service_code,
             "lat": location["lat"],

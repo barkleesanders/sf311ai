@@ -71,12 +71,11 @@ def test_multipart_upload_and_rejection(tmp_path):
             client.submit_report(
                 "trash pile", {"lat": 37.77, "long": -122.4}, str(image)
             )
-        assert (
+        with pytest.raises(ValueError, match="service code"):
             client.submit_report(
                 "unknown", {"lat": 37.77, "long": -122.4}, str(image)
             )
-            is None
-        )
+        assert len(requests) == 2
     finally:
         server.shutdown()
         thread.join()
