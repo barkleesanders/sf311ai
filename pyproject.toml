@@ -21,7 +21,7 @@ dependencies = [
     "pyyaml>=6.0.3",
     "torch>=2.10",
     "torchvision>=0.25",
-    "ultralytics==8.4.183",
+    "ultralytics==8.4.188",
     "clip @ https://github.com/ultralytics/CLIP/archive/7ffa84b3bfa40c42ecc1c77147a855e69cb2dd40.zip#sha256=ea6799c740f2725175edee0881de9f354086e801dd33d4f43b17d18c8238fb54"
 ]
 
