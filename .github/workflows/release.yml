@@ -6,7 +6,6 @@ permissions:
   contents: read
 jobs:
   quality:
-    timeout-minutes: 30
     uses: ./.github/workflows/ci.yml
   build:
     timeout-minutes: 30
